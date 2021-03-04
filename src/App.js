@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import React, {useState} from 'react'
 
 import logo from './logo.svg';
 import './App.css';
@@ -22,6 +22,14 @@ function App() {
 
     // const [currentTab, setCurrentTab] = useState('/');
 
+    let selectElement;
+
+    const showSelect = async () => {
+        console.log('i was here')
+        // selectElement.click();
+        document.getElementById('select-options').click()
+        // trigger click event manually in javascript
+    };
 
   return (
       <Router>
@@ -29,6 +37,17 @@ function App() {
 
             {/*optional: you could add this in the nav.js component*/}
           <ul className={'text-center bg-blue-500'}>
+
+              <li className={'inline-block p-4 text-lg cursor-pointer uppercase tracking-widest pl-10 pr-10 text-white hidden sm:block md:hidden'}>
+
+                  <i className={'fa fa-bars cursor-pointer'} onClick={showSelect}></i>
+
+                  {/*<select name="" id="" className={'hidden'} ref={select => selectElement = select}>*/}
+                  <select name="" id="select-options" className={'hidden'}>
+                      <option value="home">Home</option>
+                      <option value="about">About</option>
+                  </select>
+              </li>
               <li className={'inline-block p-4 text-lg cursor-pointer uppercase tracking-widest pl-10 pr-10 text-white'}>
                   <NavLink to="/about" activeClassName="text-blue-900 font-bold">About</NavLink>
               </li>
