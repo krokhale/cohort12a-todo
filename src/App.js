@@ -1,4 +1,6 @@
-import React, {useState} from 'react'
+
+
+import React, {useState, useEffect} from 'react'
 
 import logo from './logo.svg';
 import './App.css';
@@ -15,7 +17,104 @@ import Todos from "./todos";
 import Contact from "./contact";
 
 function Home() {
-    return <h2 className={'text-center'}>Welcome to my app</h2>;
+
+    const [users, setUsers] = useState();
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+
+
+    const fetchUsers = async () => {
+        console.log('this is going to fetch the users from the back end');
+        let u = await fetch('http://localhost:3000/api/v1/users');
+        let data = await u.json();
+        console.log(data);
+        setUsers(data);
+        // 1. Perform a fetch call
+        // 2. Once the fetch call is successful, update the state variable for the users
+        // 3. Display the users
+    };
+
+
+    useEffect(() => {
+        // console.log('this runs every time when the state variables change')
+        console.log('this code only runs once on component mount')
+        fetchUsers()
+    }, [])
+
+    const onFirstNameChange = async (ev) => {
+        setFirstName(ev.currentTarget.value);
+    };
+
+    const onLastNameChange = async (ev) => {
+        setLastName(ev.currentTarget.value);
+    };
+
+    const createUser = async () => {
+        console.log('create a user with the firstname', firstName);
+        console.log('create a user with the lastName', lastName);
+        let u = await fetch('http://localhost:3000/api/v1/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: JSON.stringify({firstName: firstName, lastName: lastName})
+        });
+
+        let res = await u.json();
+        console.log(res);
+        fetchUsers();
+        setFirstName('')
+        setLastName('')
+
+    };
+
+    const deleteUser = async (id) => {
+        console.log('This should delete a particular user with the id', id);
+        let u = await fetch(`http://localhost:3000/api/v1/users/${id}`, {method: 'DELETE'});
+        let res = await u.json()
+        console.log(res);
+        fetchUsers();
+
+    };
+
+    return (
+        <>
+
+            <div className={'p-5'}>
+
+                <input value={firstName} onChange={onFirstNameChange} type="firstName" className={'border'} placeholder={'First Name'}/>&nbsp;&nbsp;
+                <input value={lastName} onChange={onLastNameChange} type="lastName" className={'border'} placeholder={'Last Name'}/>&nbsp;&nbsp;
+
+                <button className={'border p-2 pr-4 pl-4 bg-gray-200'} onClick={createUser}>Create User</button>
+
+
+                <br/>
+                <br/>
+                <h1 className={'text-xl font-bold'}>List of users in the app</h1>
+                <hr/>
+
+                <br/>
+                {users && <ul>
+                    {users.map((user, idx) => {
+                        return <li key={user.id}>
+                            {idx+1}. {user.firstName} {user.lastName}
+
+                            {/*Google up function within a function reactjs*/}
+                            &nbsp;&nbsp;&nbsp; <button className={'border p-1'} onClick={() => {
+                                deleteUser(user.id)
+                            }}>Delete</button>
+
+                        </li>
+                    })}
+                </ul>}
+
+
+                {/*<h2 className={'text-center'}>Welcome to my app</h2>*/}
+            </div>
+
+        </>
+    );
 }
 
 function App() {
